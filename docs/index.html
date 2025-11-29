@@ -1,0 +1,694 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>MotoConnect</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          sans-serif;
+        background: #f5f5f7;
+        color: #111827;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1.5rem;
+        background: #111827;
+        color: white;
+      }
+      .brand {
+        font-weight: 700;
+        letter-spacing: 0.05em;
+      }
+      .nav-links {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+      }
+      .nav-links button {
+        font-size: 0.875rem;
+      }
+      main {
+        max-width: 1100px;
+        margin: 1.5rem auto;
+        padding: 0 1rem 2rem;
+      }
+      h1,
+      h2,
+      h3 {
+        margin-top: 0;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+      .card {
+        background: white;
+        border-radius: 0.75rem;
+        box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .card img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 0.5rem;
+      }
+      .price {
+        font-weight: 700;
+        color: #16a34a;
+      }
+      .owner {
+        font-size: 0.8rem;
+        color: #6b7280;
+      }
+      .btn {
+        padding: 0.4rem 0.9rem;
+        border-radius: 999px;
+        border: none;
+        cursor: pointer;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.25rem;
+      }
+      .btn-primary {
+        background: #2563eb;
+        color: white;
+      }
+      .btn-secondary {
+        background: #374151;
+        color: white;
+      }
+      .btn-danger {
+        background: #b91c1c;
+        color: white;
+      }
+      .btn-outline {
+        background: transparent;
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+      }
+      .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.8fr) minmax(0, 1.1fr);
+        gap: 1.5rem;
+      }
+      @media (max-width: 800px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
+      .panel {
+        background: white;
+        border-radius: 0.75rem;
+        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+        padding: 1rem 1.25rem 1.25rem;
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      label {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #4b5563;
+      }
+      input,
+      textarea {
+        width: 100%;
+        padding: 0.5rem 0.65rem;
+        border-radius: 0.5rem;
+        border: 1px solid #d1d5db;
+        font-size: 0.9rem;
+      }
+      textarea {
+        min-height: 70px;
+        resize: vertical;
+      }
+      input:focus,
+      textarea:focus {
+        outline: none;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
+      }
+      .error {
+        color: #b91c1c;
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+      }
+      .success {
+        color: #16a34a;
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+      }
+      .tag {
+        font-size: 0.75rem;
+        color: #6b7280;
+        border-radius: 999px;
+        border: 1px solid #e5e7eb;
+        padding: 0.1rem 0.6rem;
+      }
+      .badge {
+        font-size: 0.75rem;
+        background: rgba(37, 99, 235, 0.1);
+        color: #1d4ed8;
+        border-radius: 999px;
+        padding: 0.15rem 0.6rem;
+      }
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="brand">MotoConnect</div>
+      <div class="nav-links">
+        <span id="user-info" class="tag">No has iniciado sesión</span>
+        <button class="btn btn-outline" id="btn-open-login">Login</button>
+        <button class="btn btn-primary" id="btn-open-register">Registro</button>
+        <button class="btn btn-secondary" id="btn-logout" style="display: none">
+          Cerrar sesión
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section class="layout">
+        <!-- LISTADO DE PRODUCTOS -->
+        <div class="panel">
+          <div class="section-header">
+            <div>
+              <h2>Productos</h2>
+              <p style="margin: 0; font-size: 0.9rem; color: #6b7280">
+                Explora y gestiona los productos desde tu API NestJS en Railway.
+              </p>
+            </div>
+            <button class="btn btn-primary" id="btn-new-product">
+              Nuevo producto
+            </button>
+          </div>
+          <div id="products-container" class="grid"></div>
+          <p
+            id="products-empty"
+            style="display: none; color: #6b7280; font-size: 0.9rem"
+          >
+            No hay productos para mostrar.
+          </p>
+        </div>
+
+        <!-- AUTENTICACIÓN + FORM PRODUCTO -->
+        <div class="panel">
+          <div id="auth-section">
+            <h2 id="auth-title">Iniciar sesión</h2>
+
+            <!-- FORM LOGIN -->
+            <form id="login-form">
+              <div>
+                <label for="login-email">Email</label>
+                <input type="email" id="login-email" required />
+              </div>
+              <div>
+                <label for="login-password">Contraseña</label>
+                <input type="password" id="login-password" required />
+              </div>
+              <button type="submit" class="btn btn-primary">Entrar</button>
+              <div id="login-error" class="error"></div>
+            </form>
+
+            <!-- FORM REGISTRO -->
+            <form id="register-form" style="display: none">
+              <div>
+                <label for="reg-name">Nombre</label>
+                <input type="text" id="reg-name" required />
+              </div>
+              <div>
+                <label for="reg-email">Email</label>
+                <input type="email" id="reg-email" required />
+              </div>
+              <div>
+                <label for="reg-password">Contraseña</label>
+                <input
+                  type="password"
+                  id="reg-password"
+                  required
+                  minlength="4"
+                />
+              </div>
+              <button type="submit" class="btn btn-primary">
+                Crear cuenta
+              </button>
+              <div id="register-error" class="error"></div>
+              <div id="register-success" class="success"></div>
+            </form>
+          </div>
+
+          <hr
+            style="
+              margin: 1.5rem 0;
+              border: none;
+              border-top: 1px solid #e5e7eb;
+            "
+          />
+
+          <!-- FORM PRODUCTO (CREATE/EDIT) -->
+          <div id="product-form-section">
+            <div class="section-header">
+              <h2 id="product-form-title">Crear producto</h2>
+              <span class="badge" id="product-form-mode-label"
+                >Modo: crear</span
+              >
+            </div>
+
+            <form id="product-form">
+              <input type="hidden" id="product-id" />
+
+              <div>
+                <label for="product-name">Nombre</label>
+                <input type="text" id="product-name" required />
+              </div>
+              <div>
+                <label for="product-description">Descripción</label>
+                <textarea id="product-description" required></textarea>
+              </div>
+              <div>
+                <label for="product-price">Precio</label>
+                <input
+                  type="number"
+                  id="product-price"
+                  step="0.01"
+                  min="0"
+                  required
+                />
+              </div>
+              <div>
+                <label for="product-image">URL de imagen (opcional)</label>
+                <input type="url" id="product-image" />
+              </div>
+
+              <div
+                style="
+                  display: flex;
+                  gap: 0.5rem;
+                  margin-top: 0.5rem;
+                  flex-wrap: wrap;
+                "
+              >
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  id="product-save-btn"
+                >
+                  Guardar
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  id="product-cancel-btn"
+                >
+                  Cancelar edición
+                </button>
+              </div>
+
+              <div id="product-form-error" class="error"></div>
+              <div id="product-form-success" class="success"></div>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const API_URL = 'https://proyecto-oscar-production.up.railway.app';
+
+      let authToken = localStorage.getItem('token');
+      let currentUser = null;
+      try {
+        const savedUser = localStorage.getItem('user');
+        currentUser = savedUser ? JSON.parse(savedUser) : null;
+      } catch {
+        currentUser = null;
+      }
+
+      const productsContainer = document.getElementById('products-container');
+      const productsEmpty = document.getElementById('products-empty');
+
+      const userInfo = document.getElementById('user-info');
+      const btnOpenLogin = document.getElementById('btn-open-login');
+      const btnOpenRegister = document.getElementById('btn-open-register');
+      const btnLogout = document.getElementById('btn-logout');
+
+      const authTitle = document.getElementById('auth-title');
+      const loginForm = document.getElementById('login-form');
+      const loginError = document.getElementById('login-error');
+      const registerForm = document.getElementById('register-form');
+      const registerError = document.getElementById('register-error');
+      const registerSuccess = document.getElementById('register-success');
+
+      const btnNewProduct = document.getElementById('btn-new-product');
+      const productFormTitle = document.getElementById('product-form-title');
+      const productFormModeLabel = document.getElementById(
+        'product-form-mode-label',
+      );
+      const productForm = document.getElementById('product-form');
+      const productIdInput = document.getElementById('product-id');
+      const productNameInput = document.getElementById('product-name');
+      const productDescriptionInput = document.getElementById(
+        'product-description',
+      );
+      const productPriceInput = document.getElementById('product-price');
+      const productImageInput = document.getElementById('product-image');
+      const productFormError = document.getElementById('product-form-error');
+      const productFormSuccess = document.getElementById(
+        'product-form-success',
+      );
+      const productCancelBtn = document.getElementById('product-cancel-btn');
+
+      function updateAuthUI() {
+        if (authToken && currentUser) {
+          userInfo.textContent = `Conectado como ${currentUser.name} (${currentUser.email})`;
+          btnLogout.style.display = 'inline-flex';
+          btnOpenLogin.style.display = 'none';
+          btnOpenRegister.style.display = 'none';
+        } else {
+          userInfo.textContent = 'No has iniciado sesión';
+          btnLogout.style.display = 'none';
+          btnOpenLogin.style.display = 'inline-flex';
+          btnOpenRegister.style.display = 'inline-flex';
+        }
+      }
+
+      function setAuth(token, user) {
+        authToken = token;
+        currentUser = user;
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+        updateAuthUI();
+      }
+
+      function clearAuth() {
+        authToken = null;
+        currentUser = null;
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        updateAuthUI();
+      }
+
+      function setAuthMode(mode) {
+        if (mode === 'login') {
+          authTitle.textContent = 'Iniciar sesión';
+          loginForm.style.display = 'flex';
+          registerForm.style.display = 'none';
+        } else {
+          authTitle.textContent = 'Crear cuenta';
+          loginForm.style.display = 'none';
+          registerForm.style.display = 'flex';
+        }
+        loginError.textContent = '';
+        registerError.textContent = '';
+        registerSuccess.textContent = '';
+      }
+
+      btnOpenLogin.addEventListener('click', () => setAuthMode('login'));
+      btnOpenRegister.addEventListener('click', () => setAuthMode('register'));
+
+      btnLogout.addEventListener('click', () => {
+        clearAuth();
+      });
+
+      async function fetchJSON(path, options = {}, needAuth = false) {
+        const headers = {
+          'Content-Type': 'application/json',
+          ...(options.headers || {}),
+        };
+        if (needAuth && authToken) {
+          headers['Authorization'] = 'Bearer ' + authToken;
+        }
+
+        const res = await fetch(API_URL + path, {
+          ...options,
+          headers,
+        });
+
+        if (!res.ok) {
+          let message = 'Error HTTP ' + res.status;
+          try {
+            const data = await res.json();
+            if (data && data.message) {
+              message = Array.isArray(data.message)
+                ? data.message.join(', ')
+                : data.message;
+            }
+          } catch {}
+          throw new Error(message);
+        }
+
+        return res.json();
+      }
+
+      async function loadProducts() {
+        productsContainer.innerHTML = '<p>Cargando...</p>';
+        productsEmpty.style.display = 'none';
+        try {
+          const products = await fetchJSON('/products');
+          productsContainer.innerHTML = '';
+          if (!products.length) {
+            productsEmpty.style.display = 'block';
+            return;
+          }
+          products.forEach((p) => {
+            const card = document.createElement('article');
+            card.className = 'card';
+
+            if (p.imageUrl) {
+              const img = document.createElement('img');
+              img.src = p.imageUrl;
+              img.alt = p.name;
+              card.appendChild(img);
+            }
+
+            const title = document.createElement('h3');
+            title.textContent = p.name;
+            card.appendChild(title);
+
+            const desc = document.createElement('p');
+            desc.textContent = p.description;
+            card.appendChild(desc);
+
+            const price = document.createElement('p');
+            price.className = 'price';
+            price.textContent = '$' + Number(p.price).toFixed(2);
+            card.appendChild(price);
+
+            if (p.owner) {
+              const owner = document.createElement('p');
+              owner.className = 'owner';
+              owner.textContent = `Publicado por ${p.owner.name} (${p.owner.email})`;
+              card.appendChild(owner);
+            }
+
+            const actions = document.createElement('div');
+            actions.style.display = 'flex';
+            actions.style.gap = '0.5rem';
+            actions.style.marginTop = '0.5rem';
+
+            if (authToken) {
+              const editBtn = document.createElement('button');
+              editBtn.textContent = 'Editar';
+              editBtn.className = 'btn btn-secondary';
+              editBtn.addEventListener('click', () => {
+                enterEditMode(p);
+              });
+              actions.appendChild(editBtn);
+
+              const deleteBtn = document.createElement('button');
+              deleteBtn.textContent = 'Eliminar';
+              deleteBtn.className = 'btn btn-danger';
+              deleteBtn.addEventListener('click', () => {
+                if (confirm('¿Eliminar este producto?')) {
+                  deleteProduct(p.id);
+                }
+              });
+              actions.appendChild(deleteBtn);
+            }
+
+            card.appendChild(actions);
+            productsContainer.appendChild(card);
+          });
+        } catch (err) {
+          productsContainer.innerHTML =
+            "<p style='color:#b91c1c;'>Error al cargar productos: " +
+            err.message +
+            '</p>';
+        }
+      }
+
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        loginError.textContent = '';
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+
+        try {
+          const data = await fetchJSON('/auth/login', {
+            method: 'POST',
+            body: JSON.stringify({ email, password }),
+          });
+          setAuth(data.token, data.user);
+          loginError.textContent = '';
+        } catch (err) {
+          loginError.textContent = err.message;
+        }
+      });
+
+      registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        registerError.textContent = '';
+        registerSuccess.textContent = '';
+        const name = document.getElementById('reg-name').value;
+        const email = document.getElementById('reg-email').value;
+        const password = document.getElementById('reg-password').value;
+
+        try {
+          await fetchJSON('/auth/register', {
+            method: 'POST',
+            body: JSON.stringify({ name, email, password }),
+          });
+          registerSuccess.textContent =
+            'Cuenta creada. Ahora puedes iniciar sesión.';
+          registerError.textContent = '';
+        } catch (err) {
+          registerError.textContent = err.message;
+        }
+      });
+
+      function resetProductForm() {
+        productIdInput.value = '';
+        productNameInput.value = '';
+        productDescriptionInput.value = '';
+        productPriceInput.value = '';
+        productImageInput.value = '';
+        productFormTitle.textContent = 'Crear producto';
+        productFormModeLabel.textContent = 'Modo: crear';
+        productFormError.textContent = '';
+        productFormSuccess.textContent = '';
+      }
+
+      function enterEditMode(p) {
+        productIdInput.value = p.id;
+        productNameInput.value = p.name;
+        productDescriptionInput.value = p.description;
+        productPriceInput.value = p.price;
+        productImageInput.value = p.imageUrl || '';
+        productFormTitle.textContent = 'Editar producto';
+        productFormModeLabel.textContent = 'Modo: editar';
+        productFormError.textContent = '';
+        productFormSuccess.textContent = '';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      btnNewProduct.addEventListener('click', () => {
+        if (!authToken) {
+          alert('Debes iniciar sesión para crear productos.');
+          setAuthMode('login');
+          return;
+        }
+        resetProductForm();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      productCancelBtn.addEventListener('click', () => {
+        resetProductForm();
+      });
+
+      productForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        productFormError.textContent = '';
+        productFormSuccess.textContent = '';
+
+        if (!authToken) {
+          productFormError.textContent =
+            'Debes iniciar sesión para crear o editar productos.';
+          return;
+        }
+
+        const id = productIdInput.value;
+        const data = {
+          name: productNameInput.value,
+          description: productDescriptionInput.value,
+          price: Number(productPriceInput.value),
+          imageUrl: productImageInput.value || undefined,
+        };
+
+        try {
+          if (id) {
+            await fetchJSON(
+              '/products/' + id,
+              {
+                method: 'PUT',
+                body: JSON.stringify(data),
+              },
+              true,
+            );
+            productFormSuccess.textContent =
+              'Producto actualizado correctamente.';
+          } else {
+            await fetchJSON(
+              '/products',
+              {
+                method: 'POST',
+                body: JSON.stringify(data),
+              },
+              true,
+            );
+            productFormSuccess.textContent = 'Producto creado correctamente.';
+          }
+          resetProductForm();
+          loadProducts();
+        } catch (err) {
+          productFormError.textContent = err.message;
+        }
+      });
+
+      async function deleteProduct(id) {
+        try {
+          await fetchJSON('/products/' + id, { method: 'DELETE' }, true);
+          loadProducts();
+        } catch (err) {
+          alert('Error al eliminar: ' + err.message);
+        }
+      }
+
+      updateAuthUI();
+      setAuthMode('login');
+      loadProducts();
+    </script>
+  </body>
+</html>
